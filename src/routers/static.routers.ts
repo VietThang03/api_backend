@@ -7,4 +7,5 @@ const staticRouter = Router()
 staticRouter.get('/image/:name', wrapRequestHandler(serverImageController))
 staticRouter.get('/video-stream/:name', wrapRequestHandler(serverVideoController))
 
+
 export default staticRouter

@@ -188,3 +188,33 @@ export const oauthController = async (req: Request, res: Response) => {
   const urlRedirect =`${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify=${result.verify}&email=${result.email}&name=${result.name}`
   return res.redirect(urlRedirect)
 }
+
+export const getFollowersController = async (req: Request, res: Response) => {
+  // const {user_id} = req.params
+  const {result, total} = await usersService.getFollowers({
+    user_id: req.params.user_id,
+    limit: Number(req.query.limit as string),
+    page: Number(req.query.page as string)
+  })
+  return res.json({
+    total_page: Math.ceil(total / Number(req.query.limit)),
+    page: Number(req.query.page),
+    total: result.length,
+    data: result
+  })
+}
+
+export const getFollowingsController = async (req: Request, res: Response) => {
+  // const {user_id} = req.params
+  const {result, total} = await usersService.getFollowings({
+    user_id: req.params.user_id,
+    limit: Number(req.query.limit as string),
+    page: Number(req.query.page as string)
+  })
+  return res.json({
+    total_page: Math.ceil(total / Number(req.query.limit)),
+    page: Number(req.query.page),
+    total: result.length,
+    data: result,
+  })
+}

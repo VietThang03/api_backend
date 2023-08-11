@@ -36,7 +36,9 @@ const USERS_MESSAGE = {
   USER_FOLLOWED: 'User followed!!!',
   ALREADY_UNFOLLOWED: 'Already unfollowed!!',
   UNFOLLOW_SUCCESS: 'Unfollow success!!!',
-  GMAIL_NOT_VERIFIED: 'Gmail not verified'
+  GMAIL_NOT_VERIFIED: 'Gmail not verified',
+  USER_ID_MUST_BE_A_VALID_USER_ID: 'User id must be a valid user id',
+  USER_ID_NOT_FOUND: 'User id not found',
 } as const
 
 export default USERS_MESSAGE
@@ -53,4 +55,13 @@ export const STATUS_MESSAGES = {
   MEDIAS_MUST_BE_AN_ARRAY_OF_MEDIA_OBJECT:'Medias must be an array of media object',
   STATUS_ID_MUST_BE_A_VALID_STATUS_ID: 'Status id must be a valid status id',
   STATUS_ID_NOT_FOUND: 'Status id not found',
+  VACATION_ID_MUST_BE_A_VALID_STATUS_ID: 'Vacation id must be a valid status id',
+  VACATION_ID_NOT_FOUND: 'Vacation id not found',
+  VACATION_IS_NOT_PUBLIC: 'Vacation is not public',
+  VACATION_NOT_FOUND: 'Vacation not found'
+}
+
+export const ALBUM_MESSAGES = {
+  ALBUM_ID_MUST_BE_A_VALID_ALBUM_ID: 'Album id must be a valid album id',
+  ALBUM_ID_NOT_FOUND: 'Album id not found',
 }

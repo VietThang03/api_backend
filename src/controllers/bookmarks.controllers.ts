@@ -20,3 +20,12 @@ export const unbookmarksController = async (req: Request, res: Response) => {
     message:'Unbookmark status successfully!!!'
   })
 }
+
+export const getBookmarksUserController = async (req: Request, res: Response) => {
+  const {user_id} = req.decoded_authorization as TokenPayload
+  const result = await bookmarkServices.getBookmarksUser(user_id)
+  return res.status(200).send({
+    message:'Get bookmarks user successfully!!!',
+    data:result
+  })
+}

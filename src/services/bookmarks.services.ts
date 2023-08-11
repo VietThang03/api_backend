@@ -31,6 +31,13 @@ class BookmarkServices{
     return result
   }
 
+  async getBookmarksUser(user_id: string){
+    const result = await database.bookmarks.find({
+      user_id: new ObjectId(user_id)
+    }).toArray()
+    return result
+  }
+
 }
 
 const bookmarkServices = new BookmarkServices();

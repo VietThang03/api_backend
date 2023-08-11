@@ -11,13 +11,20 @@ import { UPLOAD_VIDEO_DIR } from './contants/dir'
 import statusRouter from './routers/status.routes'
 import bookmarksRouter from './routers/bookmarks.routes'
 import likesRouter from './routers/like.routes'
-
+import commentsRouter from './routers/comments.routes'
+import vacationRouters from './routers/vacations.routes'
+import searchRouters from './routers/search.routes'
+import albumRouters from './routers/albums.routers'
 
 initFolderPath()
 
 const app = express()
 const port = process.env.PORT
-database.connect()
+
+database.connect().then(() => {
+  database.indexPosts()
+  database.indexVacations()
+})
 
 app.use(express.json())
 
@@ -27,6 +34,10 @@ app.use('/static', staticRouter)
 app.use('/posts', statusRouter)
 app.use('/bookmarks', bookmarksRouter)
 app.use('/likes', likesRouter)
+app.use('/comments', commentsRouter)
+app.use('/vacations', vacationRouters)
+app.use('/search', searchRouters)
+app.use('/albums', albumRouters)
 
 app.use(defaultErrorHandler)
 app.use('/static/video',express.static(path.resolve(UPLOAD_VIDEO_DIR)))

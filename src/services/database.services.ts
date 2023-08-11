@@ -7,6 +7,9 @@ import Status from '~/models/schemas/Status.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
 import Bookmark from '~/models/schemas/Bookmark.schema'
 import Like from '~/models/schemas/Like.schema'
+import Comment from '~/models/schemas/Comments.schema'
+import Vacation from '~/models/schemas/Vacation.schema'
+import Album from '~/models/schemas/Album.shema'
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@travel.krviq3o.mongodb.net/?retryWrites=true&w=majority`
 
@@ -55,6 +58,32 @@ class DatabaseService {
 
   get likes(): Collection<Like>{
     return this.db.collection(process.env.DB_COLLECTIONS_LIKES as string)
+  }
+
+  get comments(): Collection<Comment>{
+    return this.db.collection(process.env.DB_COLLECTIONS_COMMENTS as string)
+  }
+
+  get vacations(): Collection<Vacation>{
+    return this.db.collection(process.env.DB_COLLECTIONS_VACATIONS as string)
+  }
+
+  get albums(): Collection<Album>{
+    return this.db.collection(process.env.DB_COLLECTIONS_ALBUMS as string)
+  }
+
+  async indexPosts() {
+    const exists = await this.posts.indexExists(['content_text'])
+    if (!exists) {
+      this.posts.createIndex({ content: 'text' }, { default_language: 'none' })
+    }
+  }
+
+  async indexVacations() {
+    const exists = await this.vacations.indexExists(['vacation_name_text'])
+    if (!exists) {
+      this.vacations.createIndex({ vacation_name: 'text'}, { default_language: 'none' })
+    }
   }
 
 }

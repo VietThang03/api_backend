@@ -145,10 +145,12 @@ class UsersService {
     ])
 
     const [access_token, refresh_token] = token
-    await database.refreshToken.insertOne(new RefreshToken({
-      user_id: new ObjectId(user_id),
-      token: refresh_token
-    }))
+    await database.refreshToken.insertOne(
+      new RefreshToken({
+        user_id: new ObjectId(user_id),
+        token: refresh_token
+      })
+    )
 
     return {
       access_token,
@@ -312,9 +314,9 @@ class UsersService {
       followed_user_id: new ObjectId(followed_user_id)
     })
 
-    if(followed_user_id === user_id) {
+    if (followed_user_id === user_id) {
       throw new ErrorWithStatus({
-        message: ('You cannot follow yourself'),
+        message: 'You cannot follow yourself',
         status: HTTP_STATUS.NOT_FOUND
       })
     }
@@ -331,21 +333,20 @@ class UsersService {
       }
     }
 
-    return{
+    return {
       message: USERS_MESSAGE.USER_FOLLOWED
     }
-
   }
 
-  async unfollow(user_id: string, _id: string){
+  async unfollow(user_id: string, _id: string) {
     const follower = await database.followers.findOne({
       user_id: new ObjectId(user_id),
       followed_user_id: new ObjectId(_id)
     })
 
     // chua follow
-    if(follower === null){
-      return{
+    if (follower === null) {
+      return {
         message: USERS_MESSAGE.ALREADY_UNFOLLOWED
       }
     }
@@ -356,10 +357,9 @@ class UsersService {
       followed_user_id: new ObjectId(_id)
     })
 
-    return{
+    return {
       message: USERS_MESSAGE.UNFOLLOW_SUCCESS
     }
-
   }
 
   private async getOauthGoogleToken(code: string) {
@@ -368,77 +368,76 @@ class UsersService {
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
       redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-      grant_type:'authorization_code'
+      grant_type: 'authorization_code'
     }
-    const {data} = await axios.post('https://oauth2.googleapis.com/token', body, {
+    const { data } = await axios.post('https://oauth2.googleapis.com/token', body, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
 
     return data as {
-      access_token: string,
+      access_token: string
       id_token: string
     }
-
   }
 
   private async getUserGoogleInfor(access_token: string, id_token: string) {
-    const {data} = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo',{
-      params:{
+    const { data } = await axios.get('https://www.googleapis.com/oauth2/v1/userinfo', {
+      params: {
         access_token,
-        alt:"json",
+        alt: 'json'
       },
-      headers:{
+      headers: {
         Authorization: `Bearer ${id_token}`
       }
     })
     return data as {
-      id: string,
-      email: string,
-      verified_email: boolean,
-      name: string,
-      given_name: string,
-      family_name: string,
-      picture: string,
-      locale:string
+      id: string
+      email: string
+      verified_email: boolean
+      name: string
+      given_name: string
+      family_name: string
+      picture: string
+      locale: string
     }
   }
 
-  async oauth(code: string){
-    const {access_token, id_token} = await this.getOauthGoogleToken(code)
+  async oauth(code: string) {
+    const { access_token, id_token } = await this.getOauthGoogleToken(code)
     const userInfor = await this.getUserGoogleInfor(access_token, id_token)
     // const {email, name} = userInfor
-    if(!userInfor.verified_email){
+    if (!userInfor.verified_email) {
       throw new ErrorWithStatus({
-        message:USERS_MESSAGE.GMAIL_NOT_VERIFIED,
+        message: USERS_MESSAGE.GMAIL_NOT_VERIFIED,
         status: HTTP_STATUS.BAD_REQUEST
       })
     }
     // Kiem tra email ton tai trong database hay chua
-    const user = await database.users.findOne({ email: userInfor.email})
+    const user = await database.users.findOne({ email: userInfor.email })
 
     // Ton tai email => cho login vao
-    if(user){
-      
+    if (user) {
       const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user._id.toString())
-      await database.refreshToken.insertOne(new RefreshToken({
-        user_id: user._id,
-        token: refresh_token
-      }))
+      await database.refreshToken.insertOne(
+        new RefreshToken({
+          user_id: user._id,
+          token: refresh_token
+        })
+      )
 
       return {
         access_token,
         refresh_token,
         newUser: 0,
         verify: user.verify,
-        email: user.email, 
+        email: user.email,
         name: user.name
       }
-
-    }else{
-       // random string password
-       const password = Math.random().toString(36).substring(2, 15)
+    } else {
+      // random string password
+      const password = Math.random().toString(36).substring(2, 15)
       // Ko ton tai email => tao tk moi
       const data = await this.register({
         name: userInfor.name,
@@ -447,12 +446,115 @@ class UsersService {
         password: password,
         confirm_password: password
       })
-      return {...data, newUser: 1, verify: UserVerifyStatus.Unverified, email: userInfor.email, name: userInfor.name}
+      return { ...data, newUser: 1, verify: UserVerifyStatus.Unverified, email: userInfor.email, name: userInfor.name }
     }
-    
-
   }
 
+  // .find({ followed_user_id: new ObjectId(user_id) },{
+  //   projection: {
+  //     _id: 0,
+  //     user_id: 1
+  //   }
+  // })
+
+  // lay nguoi follow mk
+  async getFollowers({user_id, limit, page}: {user_id: string; limit: number; page: number}) {
+    const result = await database.followers
+      .aggregate([
+        {
+          $match: {
+            followed_user_id: new ObjectId(user_id)
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'follower_info'
+          }
+        },
+        {
+          $addFields: {
+            follower_info: {
+              $map: {
+                input: '$follower_info',
+                as: 'follower',
+                in: {
+                  _id: '$$follower._id',
+                  name: '$$follower.name',
+                  email: '$$follower.email',
+                  username: '$$follower.username',
+                  avatar: '$$follower.avatar'
+                }
+              }
+            }
+          }
+        },
+        {
+          $skip: limit * (page - 1)
+        },
+        {
+          $limit: limit
+        }
+      ])
+      .toArray()
+      const total = await database.followers.countDocuments({followed_user_id: new ObjectId(user_id)})
+      return {
+        total,
+        result
+      }
+  }
+
+  // lay nguoi ma mk follow
+  async getFollowings({user_id, limit, page}: {user_id: string; limit: number; page: number}) {
+    const result = await database.followers
+      .aggregate([
+        {
+          $match: {
+            user_id: new ObjectId(user_id)
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'followed_user_id',
+            foreignField: '_id',
+            as: 'followed_info'
+          }
+        },
+        {
+          $addFields: {
+            followed_info: {
+              $map: {
+                input: '$followed_info',
+                as: 'followed',
+                in: {
+                  _id: '$$followed._id',
+                  name: '$$followed.name',
+                  email: '$$followed.email',
+                  username: '$$followed.username',
+                  avatar: '$$followed.avatar'
+                }
+              }
+            }
+          }
+        },
+        {
+          $skip: limit * (page - 1)
+        },
+        {
+          $limit: limit
+        }
+      ])
+      .toArray()
+      const total = await database.followers.countDocuments({ user_id: new ObjectId(user_id)})
+      return {
+        result,
+        total
+      }
+  }
+  
 }
 
 const usersService = new UsersService()

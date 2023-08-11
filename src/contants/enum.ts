@@ -26,3 +26,13 @@ export enum StatusTypeEnum{
   Restatus,
   Comment
 }
+
+export enum VacationMentions {
+  Everyone, // 0
+  Mentions
+}
+
+export enum AlbumAudience {
+  Everyone, // 0
+  Private // 1
+}

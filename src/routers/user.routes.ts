@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { changePasswordController, emailVerifyController, followController, forgotPasswordController, getAllUsersController, getProfileController, getUserController, loginController, logoutController, oauthController, registerController, resendVerifyEmailController, resetPasswordController, unfollowController, updateProfileUserController, verifyForgotPasswordTokenController } from '~/controllers/user.controllers'
-import { accessToken_validator, changePasswordValidator, emailVerifyTokenValidator, followValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, registerValidator, resetPasswordValidator, unfollowValidator, updateProfileValidator, verifiedUserValidator, verifyforgotPasswordTokenValidator } from '~/middlewares/users.middlewares'
+import { changePasswordController, emailVerifyController, followController, forgotPasswordController, getAllUsersController, getFollowersController, getFollowingsController, getProfileController, getUserController, loginController, logoutController, oauthController, registerController, resendVerifyEmailController, resetPasswordController, unfollowController, updateProfileUserController, verifyForgotPasswordTokenController } from '~/controllers/user.controllers'
+import { accessToken_validator, changePasswordValidator, emailVerifyTokenValidator, followValidator, forgotPasswordValidator, loginValidator, refreshTokenValidator, registerValidator, resetPasswordValidator, unfollowValidator, updateProfileValidator, userIdValidator, verifiedUserValidator, verifyforgotPasswordTokenValidator } from '~/middlewares/users.middlewares'
 import { wrapRequestHandler } from '~/utils/handlers'
 import { validate } from '~/utils/validation'
 
@@ -22,5 +22,7 @@ userRouter.get('/:username', wrapRequestHandler(getUserController))
 userRouter.post('/follow', accessToken_validator, wrapRequestHandler(verifiedUserValidator),followValidator, wrapRequestHandler(followController))
 userRouter.delete('/follow/:user_id', accessToken_validator, wrapRequestHandler(verifiedUserValidator),unfollowValidator, wrapRequestHandler(unfollowController))
 userRouter.get('/oauth/google', wrapRequestHandler(oauthController))
+userRouter.get('/follower/:user_id', accessToken_validator, verifiedUserValidator,userIdValidator, wrapRequestHandler(getFollowersController))
+userRouter.get('/following/:user_id', accessToken_validator, verifiedUserValidator,userIdValidator, wrapRequestHandler(getFollowingsController))
 
 export default userRouter
