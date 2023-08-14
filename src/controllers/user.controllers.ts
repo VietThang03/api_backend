@@ -76,7 +76,7 @@ export const resendVerifyEmailController = async (req: Request, res: Response) =
     return res.status(200).json({message:'Email already verified before!!'})
   }
 
-  const result = await usersService.resendVerifyEmail(user_id)
+  const result = await usersService.resendVerifyEmail(user_id, user.email)
 
   return res.json({
     result
@@ -84,8 +84,8 @@ export const resendVerifyEmailController = async (req: Request, res: Response) =
 }
 
 export const forgotPasswordController = async (req: Request, res: Response) => {
-  const {_id} = req.user as User
-  const result = await usersService.forgotPasswordToken((_id as ObjectId).toString())
+  const {_id, email} = req.user as User
+  const result = await usersService.forgotPasswordToken((_id as ObjectId).toString(), email)
   return res.status(200).send(result)
 }
 

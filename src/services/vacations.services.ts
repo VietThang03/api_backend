@@ -297,6 +297,34 @@ class VacationServices {
       total: total[0]?.total || 0
     }
   }
+
+  async getPostsVacation({ vacation_id, limit, page }: { vacation_id: string; limit: number; page: number }) {
+    const result = await database.posts
+      .aggregate([
+        {
+          $match: {
+            vacation_id: new ObjectId(vacation_id)
+          }
+        },
+        {
+          $skip: limit * (page - 1)
+        },
+        {
+          $limit: limit
+        }
+      ])
+      .toArray()
+
+    const total = await database.posts.countDocuments({
+      vacation_id: new ObjectId(vacation_id)
+    })
+
+    return {
+      result,
+      total
+    }
+  }
+
 }
 
 const vacationServices = new VacationServices()

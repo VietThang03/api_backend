@@ -12,6 +12,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/contants/httpStatus'
 import Follower from '~/models/schemas/Follow.schema'
 import axios from 'axios'
+import {sendForgotPasswordEmail, sendVerifyRegisterEmail } from '~/utils/email'
 
 class UsersService {
   private signAccessToken(user_id: string) {
@@ -87,7 +88,8 @@ class UsersService {
     // const user_id = result.insertedId.toString()
     const [access_token, refresh_token] = await this.signAccessTokenAndRefreshToken(user_id.toString())
 
-    console.log('email_verify_token: ', email_verify_token)
+    // console.log('email_verify_token: ', email_verify_token)
+    await sendVerifyRegisterEmail(payload.email, email_verify_token)
 
     await database.refreshToken.insertOne(
       new RefreshToken({
@@ -98,8 +100,7 @@ class UsersService {
 
     return {
       access_token,
-      refresh_token,
-      result
+      refresh_token
     }
   }
 
@@ -158,9 +159,10 @@ class UsersService {
     }
   }
 
-  async resendVerifyEmail(user_id: string) {
+  async resendVerifyEmail(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken(user_id)
-    console.log('Resend Verify Email: ', email_verify_token)
+    // console.log('Resend Verify Email: ', email_verify_token)
+    await sendVerifyRegisterEmail(email, email_verify_token)
 
     // cap nhat lai gia tri email_verify_token trong document user
     await database.users.updateOne(
@@ -178,7 +180,7 @@ class UsersService {
     }
   }
 
-  async forgotPasswordToken(user_id: string) {
+  async forgotPasswordToken(user_id: string, email: string) {
     const forgot_password_token = await this.signForgotPasswordToken(user_id)
     await database.users.updateOne(
       { _id: new ObjectId(user_id) },
@@ -192,6 +194,7 @@ class UsersService {
       }
     )
     // Gui email kem duong link den nguoi dung
+    await sendForgotPasswordEmail(email, forgot_password_token)
     return {
       message: 'Send email to reset password success',
       forgot_password_token

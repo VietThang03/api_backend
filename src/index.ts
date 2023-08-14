@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express'
 import 'dotenv/config'
+import cors, { CorsOptions } from 'cors'
 import database from './services/database.services'
 import userRouter from './routers/user.routes'
 import { defaultErrorHandler } from './middlewares/error.middlewares'
@@ -15,6 +16,7 @@ import commentsRouter from './routers/comments.routes'
 import vacationRouters from './routers/vacations.routes'
 import searchRouters from './routers/search.routes'
 import albumRouters from './routers/albums.routers'
+import './utils/s3'
 
 initFolderPath()
 
@@ -25,6 +27,11 @@ database.connect().then(() => {
   database.indexPosts()
   database.indexVacations()
 })
+
+const corsOptions: CorsOptions ={
+  origin:'*', // cho phep tat ca cac domain deu co the truy cap
+}
+app.use(cors(corsOptions))
 
 app.use(express.json())
 
@@ -41,11 +48,6 @@ app.use('/albums', albumRouters)
 
 app.use(defaultErrorHandler)
 app.use('/static/video',express.static(path.resolve(UPLOAD_VIDEO_DIR)))
-
-app.get('/', (req, res) => {
-    console.log('Hello world')
-})
-
 
 
 app.listen(port, () => {

@@ -5,6 +5,7 @@ import {
   editVacationController,
   getDetailVacationController,
   getNewFeedsVacationController,
+  getPostsVacationController,
   getVacationUserController,
   statusVacationController
 } from '~/controllers/vacations.controllers'
@@ -69,5 +70,7 @@ vacationRouters.get(
 vacationRouters.get('/vacation-posts/:vacation_id', accessToken_validator, verifiedUserValidator,vacationIdValidator, wrapRequestHandler(getVacationUserController))
 
 vacationRouters.get('/', accessToken_validator, verifiedUserValidator, paginationValidator, wrapRequestHandler(getNewFeedsVacationController))
+
+vacationRouters.get('/posts-list/:vacation_id', accessToken_validator, verifiedUserValidator, vacationIdValidator, wrapRequestHandler(getPostsVacationController))
 
 export default vacationRouters

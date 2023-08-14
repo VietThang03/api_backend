@@ -99,3 +99,16 @@ export const getNewFeedsVacationController = async (req: Request, res: Response)
     }
   })
 }
+
+export const getPostsVacationController = async (req: Request, res: Response) => {
+  const {vacation_id} = req.params
+  const result = await vacationServices.getPostsVacation({
+    vacation_id,
+    limit: Number(req.query.limit as string),
+    page: Number(req.query.page as string)
+  })
+  res.status(200).send({
+    message: 'Get posts vacation successfully',
+    data: result
+  })
+}
