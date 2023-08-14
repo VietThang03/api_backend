@@ -7,4 +7,5 @@ export interface VacationReqBody{
   mentions: string[]
   vacation_avatar?: string
   vacation_cover?: string
+  vacation_intro: string
 }

@@ -54,10 +54,11 @@ export const emailVerifyController = async (req: Request, res: Response) => {
     })
   }
 
-  await usersService.verifyEmail(user_id)
+  const result = await usersService.verifyEmail(user_id)
 
   return res.json({
-    message: 'Email verify success'
+    message: 'Email verify success',
+    result
   })
 
 }

@@ -5,6 +5,7 @@ interface VacationType {
   _id?: ObjectId
   vacation_name: string
   vacation_description: string
+  vacation_intro: string
   user_id: ObjectId
   created_at?: Date
   updated_at?: Date
@@ -19,6 +20,7 @@ export default class Vacation {
   _id?: ObjectId
   vacation_name: string
   vacation_description: string
+  vacation_intro: string
   user_id: ObjectId
   created_at: Date
   updated_at: Date
@@ -38,7 +40,8 @@ export default class Vacation {
     updated_at,
     vacation_avatar,
     vacation_cover,
-    audience
+    audience,
+    vacation_intro
   }: VacationType) {
     const date = new Date()
     this._id = _id
@@ -52,5 +55,6 @@ export default class Vacation {
     this.vacation_avatar = vacation_avatar || ''
     this.vacation_cover = vacation_cover || ''
     this.audience = audience 
+    this.vacation_intro = vacation_intro
   }
 }

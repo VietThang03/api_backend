@@ -15,7 +15,8 @@ class VacationServices {
         vacation_description: payload.vacation_description,
         user_id: new ObjectId(user_id),
         audience: payload.audience,
-        mentions: payload.mentions
+        mentions: payload.mentions,
+        vacation_intro: payload.vacation_intro
       })
     )
 
@@ -36,7 +37,8 @@ class VacationServices {
           vacation_name: payload.vacation_name,
           vacation_description: payload.vacation_description,
           audience: payload.audience,
-          mentions
+          mentions,
+          vacation_intro: payload.vacation_intro
         },
         $currentDate: {
           updated_at: true
