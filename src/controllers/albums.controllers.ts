@@ -42,13 +42,15 @@ export const deleteAlbumController = async (req: Request, res: Response) => {
 
 export const getAlbumsUserController = async (req: Request, res: Response) => {
   const {user_id} = req.params
+  const {user_id: user_login} = req.decoded_authorization as TokenPayload
   const {result, total} = await albumServices.getAlbumsUser({
     user_id,
     limit: Number(req.query.limit),
-    page: Number(req.query.page)
+    page: Number(req.query.page),
+    user_login
   })
   res.status(200).send({ 
-    message: 'Get albums by user successfully',
+    message: 'Get albums user successfully',
     data: {
       total_page: Math.ceil(total / Number(req.query.limit)),
       page: Number(req.query.page),

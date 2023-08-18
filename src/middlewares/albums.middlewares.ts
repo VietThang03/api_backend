@@ -1,9 +1,11 @@
+import { NextFunction, Request, Response } from 'express'
 import { checkSchema } from 'express-validator'
 import { ObjectId } from 'mongodb'
-import { AlbumAudience, MediaType } from '~/contants/enum'
+import { AlbumAudience, MediaType, UserVerifyStatus } from '~/contants/enum'
 import HTTP_STATUS from '~/contants/httpStatus'
 import USERS_MESSAGE, { ALBUM_MESSAGES, STATUS_MESSAGES } from '~/contants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
+import Album from '~/models/schemas/Album.shema'
 import database from '~/services/database.services'
 import { numberEnumToArray } from '~/utils/others'
 import { validate } from '~/utils/validation'
@@ -77,10 +79,51 @@ export const albumIdValidator = validate(
               message: ALBUM_MESSAGES.ALBUM_ID_NOT_FOUND,
               status: HTTP_STATUS.NOT_FOUND
             })
-          }
+          };
+          (req as Request).album = album_id
           return true
         }
       }
     }
   },['params', 'body'])
 )
+
+export const audienceAlbumValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const album = await database.albums.findOne({
+    user_id: new ObjectId(req.params.user_id),
+  })
+  if(!album){
+    throw new ErrorWithStatus({
+      message: ALBUM_MESSAGES.ALBUM_ID_NOT_FOUND,
+      status: HTTP_STATUS.NOT_FOUND
+    })
+  }
+  if (album.audience === AlbumAudience.Private) {
+    if (!req.decoded_authorization) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.UNAUTHORIZED,
+        message: USERS_MESSAGE.USER_NOT_FOUND
+      })
+    }
+
+    const author = await database.users.findOne({
+      _id: new ObjectId(album.user_id)
+    })
+
+    if (!author || author.verify === UserVerifyStatus.Banned) {
+      throw new ErrorWithStatus({
+        status: HTTP_STATUS.NOT_FOUND,
+        message: USERS_MESSAGE.USER_NOT_FOUND
+      })
+    }
+
+    const { user_id } = req.decoded_authorization
+    if (!author._id.equals(user_id)) {
+      throw new ErrorWithStatus({
+        message: ALBUM_MESSAGES.ALBUM_IS_NOT_PUBLIC,
+        status: HTTP_STATUS.FORBIDEN
+      })
+    }
+  }
+  next()
+}

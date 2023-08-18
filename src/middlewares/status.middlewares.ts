@@ -235,7 +235,7 @@ export const audienceStatusValidator = async (req: Request, res: Response, next:
     }
 
     const author = await database.users.findOne({
-      _id: new ObjectId(status._id)
+      _id: new ObjectId(status.user_id)
     })
 
     if (!author || author.verify === UserVerifyStatus.Banned) {

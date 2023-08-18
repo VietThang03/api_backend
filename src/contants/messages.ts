@@ -64,4 +64,6 @@ export const STATUS_MESSAGES = {
 export const ALBUM_MESSAGES = {
   ALBUM_ID_MUST_BE_A_VALID_ALBUM_ID: 'Album id must be a valid album id',
   ALBUM_ID_NOT_FOUND: 'Album id not found',
+  ALBUM_NOT_FOUND: 'Album not found',
+  ALBUM_IS_NOT_PUBLIC: 'Album is not public',
 }

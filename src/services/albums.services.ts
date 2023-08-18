@@ -51,15 +51,42 @@ class AlbumServices {
     return result.value
   }
 
-  async getAlbumsUser({user_id, limit, page}:{user_id: string, limit: number, page: number}) {
-    const result = await database.albums.find({ user_id: new ObjectId(user_id) }).skip(limit *(page -1)).limit(limit).toArray()
-    const total = await database.albums.countDocuments({ user_id: new ObjectId(user_id) })
-    return {
-      result,
-      total
+  async getAlbumsUser({
+    user_id,
+    limit,
+    page,
+    user_login
+  }: {
+    user_id: string
+    limit: number
+    page: number
+    user_login: string
+  }) {
+    if (user_id !== user_login) {
+      const result = await database.albums
+        .find({ user_id: new ObjectId(user_id), audience: 0 })
+        .skip(limit * (page - 1))
+        .limit(limit)
+        .toArray()
+      const total = await database.albums.countDocuments({ user_id: new ObjectId(user_id) })
+      return {
+        result,
+        total
+      } as any
+    }
+    if (user_id === user_login) {
+      const result = await database.albums
+        .find({ user_id: new ObjectId(user_id) })
+        .skip(limit * (page - 1))
+        .limit(limit)
+        .toArray()
+      const total = await database.albums.countDocuments({ user_id: new ObjectId(user_id) })
+      return {
+        result,
+        total
+      } as any
     }
   }
-
 }
 
 const albumServices = new AlbumServices()

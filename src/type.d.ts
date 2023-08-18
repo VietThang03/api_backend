@@ -3,6 +3,7 @@ import User from './models/schemas/User.schema'
 import { TokenPayload } from './models/requests/User.requests'
 import Status from './models/schemas/Status.schema'
 import Vacation from './models/schemas/Vacation.schema'
+import Album from './models/schemas/Album.shema'
 
 // mo rong kieu du lieu cho request
 declare module 'express'{
@@ -14,5 +15,6 @@ declare module 'express'{
     decoded_forgot_password_token?: TokenPayload
     status?: Status
     vacation?: Vacation
+    album?: Album
   }
 }
