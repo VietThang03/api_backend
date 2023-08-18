@@ -51,9 +51,13 @@ class AlbumServices {
     return result.value
   }
 
-  async getAlbumsUser(user_id: string) {
-    const result = await database.albums.find({ user_id: new ObjectId(user_id) }).toArray()
-    return result
+  async getAlbumsUser({user_id, limit, page}:{user_id: string, limit: number, page: number}) {
+    const result = await database.albums.find({ user_id: new ObjectId(user_id) }).skip(limit *(page -1)).limit(limit).toArray()
+    const total = await database.albums.countDocuments({ user_id: new ObjectId(user_id) })
+    return {
+      result,
+      total
+    }
   }
 
 }

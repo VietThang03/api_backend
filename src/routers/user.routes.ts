@@ -24,5 +24,6 @@ userRouter.delete('/follow/:user_id', accessToken_validator, wrapRequestHandler(
 userRouter.get('/oauth/google', wrapRequestHandler(oauthController))
 userRouter.get('/follower/:user_id', accessToken_validator, verifiedUserValidator,userIdValidator, wrapRequestHandler(getFollowersController))
 userRouter.get('/following/:user_id', accessToken_validator, verifiedUserValidator,userIdValidator, wrapRequestHandler(getFollowingsController))
+userRouter.post('/refresh_token', refreshTokenValidator, wrapRequestHandler(loginController))
 
 export default userRouter

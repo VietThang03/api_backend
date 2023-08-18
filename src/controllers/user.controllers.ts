@@ -4,7 +4,7 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import { pick } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { UserVerifyStatus } from '~/contants/enum'
-import { ChangePasswordReqBody, LogoutReqBody, RegisterRequestBody, ResetPasswordReqBody, TokenPayload, UpdateProfileReqBody } from '~/models/requests/User.requests'
+import { ChangePasswordReqBody, LogoutReqBody, RefreshTokenReqBody, RegisterRequestBody, ResetPasswordReqBody, TokenPayload, UpdateProfileReqBody } from '~/models/requests/User.requests'
 import User from '~/models/schemas/User.schema'
 import database from '~/services/database.services'
 import usersService from '~/services/users.services'
@@ -217,5 +217,15 @@ export const getFollowingsController = async (req: Request, res: Response) => {
     page: Number(req.query.page),
     total: result.length,
     data: result,
+  })
+}
+
+export const refreshTokenController = async (req: Request<ParamsDictionary, any, RefreshTokenReqBody>, res: Response) => {
+  const {user_id} = req.decoded_refresh_token as TokenPayload
+  const {refresh_token} = req.body
+  const result = await usersService.refreshToken(user_id, refresh_token)
+  return res.send({
+    message: 'Refresh token success',
+    result
   })
 }

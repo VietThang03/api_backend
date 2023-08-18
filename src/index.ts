@@ -1,5 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express'
 import 'dotenv/config'
+import { createServer } from "http";
+import { Server } from "socket.io";
 import cors, { CorsOptions } from 'cors'
 import database from './services/database.services'
 import userRouter from './routers/user.routes'
@@ -21,6 +23,7 @@ import './utils/s3'
 initFolderPath()
 
 const app = express()
+const httpServer = createServer(app);
 const port = process.env.PORT
 
 database.connect().then(() => {
@@ -45,11 +48,45 @@ app.use('/comments', commentsRouter)
 app.use('/vacations', vacationRouters)
 app.use('/search', searchRouters)
 app.use('/albums', albumRouters)
-
-app.use(defaultErrorHandler)
 app.use('/static/video',express.static(path.resolve(UPLOAD_VIDEO_DIR)))
+app.use(defaultErrorHandler)
 
 
-app.listen(port, () => {
+const io = new Server(httpServer, {
+  cors: {
+    origin: 'http://localhost:5173',
+  }
+})
+
+const users: {
+  [key: string]: {
+    socket_id: string
+  }
+} = {}
+
+io.on('connection', (socket) => {
+  const user_id = socket.handshake.auth._id
+  const name = socket.handshake.auth.name
+  users[user_id] = {
+    socket_id: socket.id
+  }
+  console.log(users)
+  socket.on('notification', (data) => {
+    // console.log(data)
+    const receiver_socket_id = users[data.to].socket_id
+    socket.to(receiver_socket_id).emit('notification user', {
+      message: `${name} vua binh luan vao bai viet cua ban`,
+      content: data.content,
+      from: user_id
+    })
+  })
+  socket.on('disconnect', () => {
+    delete users[user_id]
+    console.log('user disconnected')
+  })
+})
+
+
+httpServer.listen(port, () => {
     console.log(`server running on http://localhost:${port}`)
 })

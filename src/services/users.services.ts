@@ -98,9 +98,21 @@ class UsersService {
       })
     )
 
+    const user = await database.users.findOne({
+      _id: new ObjectId(result.insertedId)
+    },{
+      projection: {
+        password: 0,
+        email_verify_token: 0,
+        forgot_password_token: 0,
+        verify: 0 
+      }
+    })
+
     return {
       access_token,
-      refresh_token
+      refresh_token,
+      user
     }
   }
 
@@ -556,6 +568,18 @@ class UsersService {
         result,
         total
       }
+  }
+
+  async refreshToken(user_id: string, refresh_token: string) {
+    const [new_access_token, new_refresh_token] = await Promise.all([
+      this.signAccessToken(user_id),
+      this.signRefeshToken(user_id),
+      database.refreshToken.deleteOne({ token: refresh_token })
+    ])
+    return {
+      access_token: new_access_token,
+      refresh_token: new_refresh_token
+    }
   }
   
 }

@@ -2,7 +2,7 @@ import { Request } from 'express'
 import { File } from 'formidable'
 import path from 'path'
 import fs from 'fs'
-import { UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/contants/dir'
+import { UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_DIR, UPLOAD_VIDEO_TEMP_DIR } from '~/contants/dir'
 
 export const initFolderPath = () => {
   ;[UPLOAD_IMAGE_TEMP_DIR, UPLOAD_VIDEO_TEMP_DIR].forEach((dir) => {
@@ -51,7 +51,7 @@ export const handleUploadVideo = async (req: Request) => {
   const formidable = (await import('formidable')).default
   const form = formidable({
     // khi upload file se vao thu muc uploads
-    uploadDir: UPLOAD_VIDEO_TEMP_DIR,
+    uploadDir: UPLOAD_VIDEO_DIR,
     // so luong file dc upload
     maxFiles: 1,
     // kich thuoc toi da
