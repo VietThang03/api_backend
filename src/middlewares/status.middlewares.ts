@@ -248,7 +248,7 @@ export const audienceStatusValidator = async (req: Request, res: Response, next:
     const { user_id } = req.decoded_authorization
     if (!author._id.equals(user_id)) {
       throw new ErrorWithStatus({
-        message: STATUS_MESSAGES.VACATION_IS_NOT_PUBLIC,
+        message: STATUS_MESSAGES.STATUS_NOT_PUBLIC,
         status: HTTP_STATUS.FORBIDEN
       })
     }

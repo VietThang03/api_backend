@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
   users[user_id] = {
     socket_id: socket.id
   }
-  console.log(users)
+  // console.log(users)
   socket.on('notification', (data) => {
     // console.log(data)
     const receiver_socket_id = users[data.to].socket_id
@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
   })
   socket.on('disconnect', () => {
     delete users[user_id]
-    console.log('user disconnected')
+    // console.log('user disconnected')
   })
 })
 

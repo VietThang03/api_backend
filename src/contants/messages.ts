@@ -58,7 +58,8 @@ export const STATUS_MESSAGES = {
   VACATION_ID_MUST_BE_A_VALID_STATUS_ID: 'Vacation id must be a valid status id',
   VACATION_ID_NOT_FOUND: 'Vacation id not found',
   VACATION_IS_NOT_PUBLIC: 'Vacation is not public',
-  VACATION_NOT_FOUND: 'Vacation not found'
+  VACATION_NOT_FOUND: 'Vacation not found',
+  STATUS_NOT_PUBLIC: 'Status is not public',
 }
 
 export const ALBUM_MESSAGES = {

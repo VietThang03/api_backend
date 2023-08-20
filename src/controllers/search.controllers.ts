@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import {ParamsDictionary} from 'express-serve-static-core'
-import { SearchQuery } from "~/models/requests/Search.request";
-import searchServices from "~/services/search.services";
+import { Request, Response } from 'express'
+import { ParamsDictionary } from 'express-serve-static-core'
+import { SearchQuery } from '~/models/requests/Search.request'
+import searchServices from '~/services/search.services'
 
 export const searchController = async (req: Request<ParamsDictionary, any, any, SearchQuery>, res: Response) => {
   const limit = Number(req.query.limit)
@@ -9,18 +9,17 @@ export const searchController = async (req: Request<ParamsDictionary, any, any, 
   const result = await searchServices.search({
     limit,
     page,
-    content: req.query.content,
-    vacation_name: req.query.vacation_name,
-    people_follow: req.query.people_follow
+    search_query: req.query.q
   })
   res.send({
     message: 'success',
-    result:{
-      total_page: Math.ceil(result.total_vacation/limit),
-      total: result.vacations.length,
-      page: Number(req.query.page),
-      // posts: result?.posts,
-      vacations: result.vacations
+    total_page: Math.ceil((result.total_vacation + result.total) / limit),
+    total_vacations: result.vacations.length,
+    total_users: result.users.length,
+    page: Number(req.query.page),
+    data: {
+      vacations: result.vacations,
+      users: result.users
     }
   })
 }

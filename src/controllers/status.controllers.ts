@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
-import { pick } from 'lodash'
+import moment from 'moment'
 import { Pagination, StatusRequestBody } from '~/models/requests/Status.requests'
 import { TokenPayload } from '~/models/requests/User.requests'
 import statusServices from '~/services/status.services'
@@ -8,8 +8,14 @@ import statusServices from '~/services/status.services'
 export const createStatusController = async (req: Request<ParamsDictionary, any, StatusRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await statusServices.createStatus(user_id, req.body)
+  if(!result){
+    return res.status(400).send({
+      message: 'Create status failed!!!'
+    })
+  }
   return res.status(201).send({
     message: 'Create status successfully!!!',
+    create_at: moment().diff(result.created_at, 'seconds'),
     data: result
   })
 }
@@ -74,10 +80,10 @@ export const getNewsFeedController = async (req: Request, res: Response) => {
   })
   res.send({
     message: 'Get news feed successfully!!!',
-    result: {
-      total_page: Math.ceil(result.total / Number(req.query.limit as string)),
+    total_page: Math.ceil(result.total / Number(req.query.limit as string)),
       page: Number(req.query.page as string),
-      total: Number(req.query.limit as string),
+      total: result.total,
+    result: {
       posts: result.status
     }
   })

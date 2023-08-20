@@ -15,21 +15,60 @@ class CommentServices {
     return result
   }
 
-  async getCommentsStatus(status_id: string) {
+  async getCommentsStatus({ status_id, limit, page }: { status_id: string; limit: number; page: number }) {
     const result = await database.comments
-      .find(
+      .aggregate([
         {
-          status_id: new ObjectId(status_id)
+          $match: {
+            status_id: new ObjectId(status_id)
+          }
         },
         {
-          projection: {
-            user_id: 1,
-            comment: 1
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: {
+            path: '$user'
+          }
+        },
+        {
+          $project: {
+            user: {
+              password: 0,
+              date_of_birth: 0,
+              verify: 0,
+              created_at_at: 0,
+              updated_at_at: 0,
+              forgot_password_token: 0,
+              email_verify_token: 0
+            }
+          }
+        },
+        {
+          $skip: limit * (page - 1)
+        },
+        {
+          $limit: limit
+        },
+        {
+          $sort: {
+            created_at: -1
           }
         }
-      )
+      ])
       .toArray()
-    return result
+    const total = await database.comments.countDocuments({
+      status_id: new ObjectId(status_id)
+    })
+    return {
+      total,
+      result
+    }
   }
 
   editComment(comment_id: string, comment: string) {
@@ -53,7 +92,6 @@ class CommentServices {
       _id: new ObjectId(comment_id)
     })
   }
-
 }
 
 const commentServices = new CommentServices()
