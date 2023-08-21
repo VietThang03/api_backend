@@ -60,6 +60,10 @@ export const STATUS_MESSAGES = {
   VACATION_IS_NOT_PUBLIC: 'Vacation is not public',
   VACATION_NOT_FOUND: 'Vacation not found',
   STATUS_NOT_PUBLIC: 'Status is not public',
+  VACATION_NAME_IS_REQUIRED: 'Vacation name is required',
+  VACATION_DESCRIPTION_IS_REQUIRED: 'Vacation description is required',
+  VACATION_INTRO_IS_REQUIRED: 'Vacation intro is required',
+  VACATION_AVATAR_IS_REQUIRED: 'Vacation avatar is required',
 }
 
 export const ALBUM_MESSAGES = {

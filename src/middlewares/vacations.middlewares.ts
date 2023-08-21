@@ -16,6 +16,10 @@ export const createVacationValidator = validate(
   checkSchema({
     vacation_name: {
       isString: true,
+      notEmpty:{
+        errorMessage: STATUS_MESSAGES.VACATION_NAME_IS_REQUIRED
+      },
+      trim: true,
       isLength: {
         options: {
           max: 1000
@@ -24,6 +28,10 @@ export const createVacationValidator = validate(
     },
     vacation_description: {
       isString: true,
+      notEmpty:{
+        errorMessage: STATUS_MESSAGES.VACATION_DESCRIPTION_IS_REQUIRED
+      },
+      trim: true,
       isLength: {
         options: {
           max: 2000
@@ -46,6 +54,25 @@ export const createVacationValidator = validate(
       isIn: {
         options: [vacationMentions],
         errorMessage: STATUS_MESSAGES.UNVALID_AUDIENCE
+      }
+    },
+    vacation_intro: {
+      isString: true,
+      trim: true,
+      notEmpty:{
+        errorMessage: STATUS_MESSAGES.VACATION_INTRO_IS_REQUIRED
+      },
+      isLength: {
+        options: {
+          max: 1000
+        }
+      }
+    },
+    vacation_avatar:{
+      isString: true,
+      trim: true,
+      notEmpty:{
+        errorMessage: STATUS_MESSAGES.VACATION_AVATAR_IS_REQUIRED
       }
     }
   })
