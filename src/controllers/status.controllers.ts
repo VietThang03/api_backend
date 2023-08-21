@@ -8,7 +8,7 @@ import statusServices from '~/services/status.services'
 export const createStatusController = async (req: Request<ParamsDictionary, any, StatusRequestBody>, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
   const result = await statusServices.createStatus(user_id, req.body)
-  if(!result){
+  if (!result) {
     return res.status(400).send({
       message: 'Create status failed!!!'
     })
@@ -36,8 +36,8 @@ export const getStatusController = async (req: Request, res: Response) => {
 
 export const getStatusUserController = async (req: Request, res: Response) => {
   const { user_id } = req.params
-  const {user_id: user_login} = req.decoded_authorization as TokenPayload
-  const {result, total} = await statusServices.getStatusUser({
+  const { user_id: user_login } = req.decoded_authorization as TokenPayload
+  const { result, total } = await statusServices.getStatusUser({
     user_id,
     user_login,
     limit: Number(req.query.limit as string),
@@ -72,7 +72,7 @@ export const deleteStatusController = async (req: Request, res: Response) => {
 }
 
 export const getNewsFeedController = async (req: Request, res: Response) => {
-  const {user_id} = req.decoded_authorization as TokenPayload
+  const { user_id } = req.decoded_authorization as TokenPayload
   const result = await statusServices.getNewFeeds({
     user_id,
     limit: Number(req.query.limit as string),
@@ -81,8 +81,8 @@ export const getNewsFeedController = async (req: Request, res: Response) => {
   res.send({
     message: 'Get news feed successfully!!!',
     total_page: Math.ceil(result.total / Number(req.query.limit as string)),
-      page: Number(req.query.page as string),
-      total: result.total,
+    page: Number(req.query.page as string),
+    total: result.total,
     result: {
       posts: result.status
     }

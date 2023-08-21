@@ -50,15 +50,15 @@ class CommentServices {
           }
         },
         {
+          $sort: {
+            created_at: -1
+          }
+        },
+        {
           $skip: limit * (page - 1)
         },
         {
           $limit: limit
-        },
-        {
-          $sort: {
-            created_at: -1
-          }
         }
       ])
       .toArray()
@@ -71,8 +71,8 @@ class CommentServices {
     }
   }
 
-  editComment(comment_id: string, comment: string) {
-    return database.comments.findOneAndUpdate(
+  async editComment(comment_id: string, comment: string) {
+    return await database.comments.findOneAndUpdate(
       {
         _id: new ObjectId(comment_id)
       },
@@ -87,11 +87,19 @@ class CommentServices {
     )
   }
 
-  deleteComment(comment_id: string) {
-    return database.comments.findOneAndDelete({
+  async deleteComment(comment_id: string) {
+    return await database.comments.findOneAndDelete({
       _id: new ObjectId(comment_id)
     })
   }
+
+  async countComments(status_id: string) {
+    const total = await database.comments.countDocuments({
+      status_id: new ObjectId(status_id)
+    })
+    return total
+  }
+
 }
 
 const commentServices = new CommentServices()

@@ -6,6 +6,7 @@ import {
   getDetailVacationController,
   getNewFeedsVacationController,
   getPostsVacationController,
+  getRandomVacationController,
   getVacationUserController,
   statusVacationController
 } from '~/controllers/vacations.controllers'
@@ -26,6 +27,13 @@ vacationRouters.post(
   verifiedUserValidator,
   createVacationValidator,
   wrapRequestHandler(createVacationController)
+)
+
+vacationRouters.get(
+  '/random',
+  accessToken_validator,
+  verifiedUserValidator,
+  wrapRequestHandler(getRandomVacationController)
 )
 
 vacationRouters.put(
@@ -67,10 +75,28 @@ vacationRouters.get(
   wrapRequestHandler(getVacationUserController)
 )
 
-vacationRouters.get('/vacation-posts/:vacation_id', accessToken_validator, verifiedUserValidator,vacationIdValidator, wrapRequestHandler(getVacationUserController))
+vacationRouters.get(
+  '/vacation-posts/:vacation_id',
+  accessToken_validator,
+  verifiedUserValidator,
+  vacationIdValidator,
+  wrapRequestHandler(getVacationUserController)
+)
 
-vacationRouters.get('/', accessToken_validator, verifiedUserValidator, paginationValidator, wrapRequestHandler(getNewFeedsVacationController))
+vacationRouters.get(
+  '/',
+  accessToken_validator,
+  verifiedUserValidator,
+  paginationValidator,
+  wrapRequestHandler(getNewFeedsVacationController)
+)
 
-vacationRouters.get('/posts-list/:vacation_id', accessToken_validator, verifiedUserValidator, vacationIdValidator, wrapRequestHandler(getPostsVacationController))
+vacationRouters.get(
+  '/posts-list/:vacation_id',
+  accessToken_validator,
+  verifiedUserValidator,
+  vacationIdValidator,
+  wrapRequestHandler(getPostsVacationController)
+)
 
 export default vacationRouters

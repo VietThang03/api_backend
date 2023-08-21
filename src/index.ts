@@ -54,7 +54,7 @@ app.use(defaultErrorHandler)
 
 const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: '*',
   }
 })
 
@@ -87,6 +87,6 @@ io.on('connection', (socket) => {
 })
 
 
-httpServer.listen(port, () => {
+app.listen(port, () => {
     console.log(`server running on http://localhost:${port}`)
 })

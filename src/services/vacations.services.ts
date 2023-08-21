@@ -246,15 +246,15 @@ class VacationServices {
             }
           },
           {
+            $sort: {
+              created_at: -1
+            }
+          },
+          {
             $skip: limit * (page - 1)
           },
           {
             $limit: limit
-          },
-          {
-            $sort: {
-              created_at: -1
-            }
           }
         ])
         .toArray(),
@@ -325,6 +325,25 @@ class VacationServices {
       result,
       total
     }
+  }
+
+  async getRandomVacations() {
+    const result = await database.vacations.aggregate([
+      {
+        $match: {
+          audience: 0
+        }
+      },
+      {
+        $sample: {
+          size: 10
+        }
+      }
+    ]).toArray()
+    // await database.vacations.deleteMany({
+    //   vacation_name: ""
+    // })
+    return result
   }
 
 }

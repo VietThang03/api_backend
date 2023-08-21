@@ -370,6 +370,11 @@ class StatusServices {
             }
           },
           {
+            $sort: {
+              created_at: -1
+            }
+          },
+          {
             $skip: limit * (page - 1)
           },
           {
@@ -452,14 +457,9 @@ class StatusServices {
                 forgot_password_token: 0,
                 verify: 0,
                 date_of_birth: 0,
-                create_at: 0,
-                update_at: 0
+                created_at: 0,
+                updated_at: 0
               }
-            }
-          },
-          {
-            $sort: {
-              created_at: -1
             }
           }
         ])

@@ -42,3 +42,11 @@ export const deleteCommentController = async (req: Request, res: Response) => {
     message: 'Delete comment successfully'
   })
 }
+
+export const countCommentsController = async (req: Request, res: Response) => {
+  const total = await commentServices.countComments(req.params.status_id)
+  res.status(200).send({
+    message: 'Count comments successfully',
+    total: total
+  })
+}

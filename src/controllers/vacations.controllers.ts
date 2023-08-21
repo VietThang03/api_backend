@@ -112,3 +112,11 @@ export const getPostsVacationController = async (req: Request, res: Response) =>
     data: result
   })
 }
+
+export const getRandomVacationController = async (req: Request, res: Response) => {
+  const result = await vacationServices.getRandomVacations()
+  res.status(200).send({
+    message: 'Get random vacation successfully',
+    data: result
+  })
+}
