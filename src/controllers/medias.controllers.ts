@@ -11,6 +11,11 @@ export const uploadImageController = async (req: Request, res: Response) => {
   return res.json({ result: result })
 }
 
+export const uploadSingleImageController = async (req: Request, res: Response) => {
+  const result = await mediasService.uploadSingleImage(req)
+  return res.json({ result: result })
+}
+
 export const serverImageController = async (req: Request, res: Response) => {
   const {name} = req.params
   return res.sendFile(path.resolve(UPLOAD_IMAGE_DIR, name), (err) => {

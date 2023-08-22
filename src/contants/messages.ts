@@ -64,6 +64,7 @@ export const STATUS_MESSAGES = {
   VACATION_DESCRIPTION_IS_REQUIRED: 'Vacation description is required',
   VACATION_INTRO_IS_REQUIRED: 'Vacation intro is required',
   VACATION_AVATAR_IS_REQUIRED: 'Vacation avatar is required',
+  CONTENT_IS_REQUIRED: 'Content is required',
 }
 
 export const ALBUM_MESSAGES = {
@@ -71,4 +72,6 @@ export const ALBUM_MESSAGES = {
   ALBUM_ID_NOT_FOUND: 'Album id not found',
   ALBUM_NOT_FOUND: 'Album not found',
   ALBUM_IS_NOT_PUBLIC: 'Album is not public',
+  ALBUM_NAME_IS_REQUIRED: 'Album name is required',
+  ALBUM_DESCRIPTION_IS_REQUIRED: 'Album description is required',
 }

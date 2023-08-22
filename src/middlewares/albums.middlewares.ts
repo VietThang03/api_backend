@@ -19,6 +19,10 @@ export const createAlbum = validate(
     {
       album_name: {
         isString: true,
+        notEmpty:{
+          errorMessage: ALBUM_MESSAGES.ALBUM_NAME_IS_REQUIRED
+        },
+        trim: true,
         isLength: {
           options: {
             max: 1000
@@ -27,6 +31,10 @@ export const createAlbum = validate(
       },
       album_description: {
         isString: true,
+        notEmpty: {
+          errorMessage: ALBUM_MESSAGES.ALBUM_DESCRIPTION_IS_REQUIRED
+        },
+        trim: true,
         isLength: {
           options: {
             max: 2000

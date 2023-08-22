@@ -3,16 +3,16 @@ import path from 'path'
 import fs from 'fs'
 import 'dotenv/config'
 import sharp from 'sharp'
-import { UPLOAD_IMAGE_DIR } from '~/contants/dir'
-import { getNameFormFullName, handleUploadImage, handleUploadVideo } from '~/utils/file'
+import { UPLOAD_IMAGE_DIR, UPLOAD_IMAGE_TEMP_DIR, UPLOAD_SINGLE_IMAGE_DIR } from '~/contants/dir'
+import { getNameFormFullName, handleUploadImage, handleUploadSingleImage, handleUploadVideo } from '~/utils/file'
 import { isProduction } from '~/contants/config'
-import { type } from 'os'
 import { MediaType } from '~/contants/enum'
 import { Media } from '~/models/Media/Media'
 import { uploadFileToS3 } from '~/utils/s3'
 import mime from 'mime'
 import fsPromise from 'fs/promises'
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3'
+import { File } from 'formidable'
 
 class MediasService {
   async handleUploadImage(req: Request) {
@@ -31,10 +31,7 @@ class MediasService {
           filePath: newPath,
           contentType: mime.getType(newPath) as string
         })
-        await Promise.all([
-          fsPromise.unlink(file.filepath),
-          fsPromise.unlink(newPath)
-        ])
+        await Promise.all([fsPromise.unlink(file.filepath), fsPromise.unlink(newPath)])
         return {
           // url: isProduction
           //   ? `${process.env.HOST}/static/image/${newFullFileName}`
@@ -44,7 +41,26 @@ class MediasService {
         }
       })
     )
-    return result
+    return result 
+  }
+
+  async uploadSingleImage(req: Request) {
+    const files = await handleUploadSingleImage(req)
+    // console.log(files)
+    const newName = getNameFormFullName(files.newFilename)
+    // console.log(newName)
+    const newFullFileName = `${newName}.jpg`
+    const newPath = path.resolve(UPLOAD_SINGLE_IMAGE_DIR, newFullFileName)
+    await sharp(files.filepath).jpeg().toFile(newPath)
+    const s3Result = await uploadFileToS3({
+      fileName: newFullFileName,
+      filePath: newPath,
+      contentType: mime.getType(newPath) as string
+    })
+    await Promise.all([fsPromise.unlink(files.filepath), fsPromise.unlink(newPath)]) 
+    // fs.unlinkSync(files.filepath) 
+    const url = (s3Result as CompleteMultipartUploadCommandOutput).Location as string
+    return url 
   }
 
   async uploadVideo(req: Request) {

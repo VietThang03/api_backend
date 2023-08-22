@@ -48,8 +48,12 @@ export const createStatusValidator = validate(
       },
       content: {
         isString: true,
+        trim: true,
+        notEmpty:{
+          errorMessage: STATUS_MESSAGES.CONTENT_IS_REQUIRED
+        },
         custom: {
-          options: (value, { req }) => {
+          options: (value, { req }) => {           
             const type = req.body.type as StatusTypeEnum
             const mentions = req.body.mentions as string[]
             const hashtags = req.body.hashtags as string[]
