@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { create } from 'lodash'
 import {
   createStatusController,
   getStatusUserController,
@@ -47,6 +48,7 @@ statusRouter.put(
   '/:status_id',
   accessToken_validator,
   verifiedUserValidator,
+  createStatusValidator,
   statusIdValidator,
   wrapRequestHandler(editStatusController)
 )
