@@ -120,3 +120,20 @@ export const getRandomVacationController = async (req: Request, res: Response) =
     data: result
   })
 }
+
+export const searchUsersVacationController = async (req: Request, res: Response) => {
+  const limit = Number(req.query.limit)
+  const page = Number(req.query.page)
+  const {users_data, total} = await vacationServices.searchUsersVacation({
+    limit,
+    page,
+    users: req.query.users as string
+  })
+  res.status(200).send({
+    message: 'Get search users vacation successfully',
+    total_page: Math.ceil(total / limit),
+    page: page,
+    total: total,
+    data: users_data
+  })
+}

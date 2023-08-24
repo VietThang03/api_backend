@@ -8,6 +8,7 @@ import {
   getPostsVacationController,
   getRandomVacationController,
   getVacationUserController,
+  searchUsersVacationController,
   statusVacationController
 } from '~/controllers/vacations.controllers'
 import { paginationValidator } from '~/middlewares/status.middlewares'
@@ -98,5 +99,7 @@ vacationRouters.get(
   vacationIdValidator,
   wrapRequestHandler(getPostsVacationController)
 )
+
+vacationRouters.post('/mentions-users', accessToken_validator, verifiedUserValidator,paginationValidator, wrapRequestHandler(searchUsersVacationController))
 
 export default vacationRouters

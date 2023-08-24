@@ -328,24 +328,85 @@ class VacationServices {
   }
 
   async getRandomVacations() {
-    const result = await database.vacations.aggregate([
-      {
-        $match: {
-          audience: 0
+    const result = await database.vacations
+      .aggregate([
+        {
+          $match: {
+            audience: 0
+          }
+        },
+        {
+          $sample: {
+            size: 10
+          }
         }
-      },
-      {
-        $sample: {
-          size: 10
-        }
-      }
-    ]).toArray()
+      ])
+      .toArray()
     // await database.vacations.deleteMany({
     //   vacation_name: ""
     // })
     return result
   }
 
+  async searchUsersVacation({ users, limit, page }: { users: string; limit: number; page: number }) {
+    const [users_data, total] = await Promise.all([
+      database.users
+        .aggregate([
+          {
+            $match: {
+              name: {
+                $regex: users
+              }
+            }
+          },
+          {
+            $project: {
+              password: 0,
+              date_of_birth: 0,
+              created_at: 0,
+              updated_at: 0,
+              email_verify_token: 0,
+              forgot_password_token: 0
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+      database.users
+        .aggregate([
+          {
+            $match: {
+              name: {
+                $regex: users
+              }
+            }
+          },
+          {
+            $project: {
+              password: 0,
+              date_of_birth: 0,
+              created_at: 0,
+              updated_at: 0,
+              email_verify_token: 0,
+              forgot_password_token: 0
+            }
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+    return {
+      users_data,
+      total: total[0]?.total || 0
+    }
+  }
 }
 
 const vacationServices = new VacationServices()

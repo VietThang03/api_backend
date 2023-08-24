@@ -334,9 +334,14 @@ class StatusServices {
         }
       )
       .toArray()
+    const randomId = await database.users
+      .find({ verify: 1 }, { projection: { _id: 1 } })
+      .limit(25)
+      .toArray()
     const ids = followed_user_ids.map((item) => item.followed_user_id)
-    // Mong muốn newfees sẽ lấy luôn cả tweet của mình
+    // Mong muốn newfeeds sẽ lấy luôn cả status của mình
     ids.push(user_id_obj)
+    ids.push(...randomId.map((item) => item._id))
     const [status, total] = await Promise.all([
       database.posts
         .aggregate([

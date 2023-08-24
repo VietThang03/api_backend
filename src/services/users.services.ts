@@ -129,9 +129,13 @@ class UsersService {
         token: refresh_token
       })
     )
+    const user = await database.users.findOne({
+      _id: new ObjectId(user_id)
+    })
     return {
       access_token,
-      refresh_token
+      refresh_token,
+      user
     }
   }
 
