@@ -271,6 +271,17 @@ class VacationServices {
             }
           },
           {
+            $sort: {
+              created_at: -1
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          },
+          {
             $project: {
               user: {
                 password: 0,
@@ -291,17 +302,6 @@ class VacationServices {
                 forgot_password_token: 0
               }
             }
-          },
-          {
-            $sort: {
-              created_at: -1
-            }
-          },
-          {
-            $skip: limit * (page - 1)
-          },
-          {
-            $limit: limit
           }
         ])
         .toArray(),
