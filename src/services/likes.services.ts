@@ -27,7 +27,7 @@ class LikeServices {
       user_id: new ObjectId(user_id),
       status_id: new ObjectId(status_id)
     })
-    return result
+    return result.value as WithId<Like>
   }
   async getLikeStatus({status_id, limit, page}:{status_id: string; limit: number; page: number}) {
     const result = await database.likes.aggregate([

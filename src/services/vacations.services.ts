@@ -61,9 +61,56 @@ class VacationServices {
   }
 
   async getDetailVacation(vacation_id: string) {
-    const result = await database.vacations.findOne({
-      _id: new ObjectId(vacation_id)
-    })
+    const result = await database.vacations.aggregate([
+      {
+        $match: {
+          _id: new ObjectId(vacation_id)
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'user_id',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $unwind: {
+          path: '$user'
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'mentions',
+          foreignField: '_id',
+          as: 'mentions'
+        }
+      },
+      {
+        $project: {
+          user: {
+            password: 0,
+            email_verify_token: 0,
+            forgot_password_token: 0,
+            verify: 0,
+            date_of_birth: 0,
+            created_at: 0,
+            updated_at: 0
+          },
+          mentions: {
+            password: 0,
+            email_verify_token: 0,
+            forgot_password_token: 0,
+            verify: 0,
+            date_of_birth: 0,
+            created_at: 0,
+            updated_at: 0
+          }
+        }
+      }
+    ]).toArray()
 
     return result
   }
@@ -301,29 +348,119 @@ class VacationServices {
   }
 
   async getPostsVacation({ vacation_id, limit, page }: { vacation_id: string; limit: number; page: number }) {
-    const result = await database.posts
-      .aggregate([
-        {
-          $match: {
-            vacation_id: new ObjectId(vacation_id)
+    const [result, total] = await Promise.all([
+      database.posts
+        .aggregate([
+          {
+            $match: {
+              vacation_id: new ObjectId(vacation_id)
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'user_id',
+              foreignField: '_id',
+              as: 'user'
+            }
+          },
+          {
+            $unwind: {
+              path: '$user'
+            }
+          },
+          {
+            $sort: {
+              created_at: -1
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          },
+          {
+            $lookup: {
+              from: 'hashtags',
+              localField: 'hashtags',
+              foreignField: '_id',
+              as: 'hashtags'
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'mentions',
+              foreignField: '_id',
+              as: 'mentions'
+            }
+          },
+          {
+            $addFields: {
+              mentions: {
+                $map: {
+                  input: '$mentions',
+                  as: 'mention',
+                  in: {
+                    _id: '$$mention._id',
+                    name: '$$mention.name',
+                    email: '$$mention.email',
+                    username: '$$mention.username'
+                  }
+                }
+              }
+            }
+          },
+          {
+            $project: {
+              user: {
+                password: 0,
+                email_verify_token: 0,
+                forgot_password_token: 0,
+                verify: 0,
+                date_of_birth: 0,
+                created_at: 0,
+                updated_at: 0
+              }
+            }
           }
-        },
-        {
-          $skip: limit * (page - 1)
-        },
-        {
-          $limit: limit
-        }
-      ])
-      .toArray()
+        ])
+        .toArray(),
+      database.posts
+        .aggregate([
+          {
+            $match: {
+              vacation_id: new ObjectId(vacation_id)
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'user_id',
+              foreignField: '_id',
+              as: 'user'
+            }
+          },
+          {
+            $unwind: {
+              path: '$user'
+            }
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
 
-    const total = await database.posts.countDocuments({
-      vacation_id: new ObjectId(vacation_id)
-    })
+    // const total = await database.posts.countDocuments({
+    //   vacation_id: new ObjectId(vacation_id)
+    // })
 
     return {
       result,
-      total
+      total: total[0]?.total || 0
     }
   }
 

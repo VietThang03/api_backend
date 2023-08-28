@@ -102,13 +102,16 @@ export const getNewFeedsVacationController = async (req: Request, res: Response)
 
 export const getPostsVacationController = async (req: Request, res: Response) => {
   const {vacation_id} = req.params
-  const result = await vacationServices.getPostsVacation({
+  const {result, total} = await vacationServices.getPostsVacation({
     vacation_id,
     limit: Number(req.query.limit as string),
     page: Number(req.query.page as string)
   })
   res.status(200).send({
     message: 'Get posts vacation successfully',
+    total_page: Math.ceil(total / Number(req.query.limit as string)),
+    page: Number(req.query.page as string),
+    total: result.length,
     data: result
   })
 }

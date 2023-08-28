@@ -15,9 +15,10 @@ export const likesController = async (req: Request<ParamsDictionary, any, LikeRe
 
 export const unLikesController = async (req: Request, res: Response) => {
   const { user_id } = req.decoded_authorization as TokenPayload
-  await likeServices.unLikesStatus(user_id, req.params.status_id)
+  const result = await likeServices.unLikesStatus(user_id, req.params.status_id)
   return res.status(200).send({
-    message: 'Unlike status successfully!!!'
+    message: 'Unlike status successfully!!!',
+    data: result
   })
 }
 
