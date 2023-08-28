@@ -349,6 +349,9 @@ class StatusServices {
             $match: {
               user_id: {
                 $in: ids
+              },
+              vacation_id:{
+                $in: ["", undefined]
               }
             }
           },
