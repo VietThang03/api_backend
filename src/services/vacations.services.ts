@@ -38,7 +38,8 @@ class VacationServices {
           vacation_description: payload.vacation_description,
           audience: payload.audience,
           mentions,
-          vacation_intro: payload.vacation_intro
+          vacation_intro: payload.vacation_intro,
+          vacation_avatar: payload.vacation_avatar
         },
         $currentDate: {
           updated_at: true
