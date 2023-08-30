@@ -452,7 +452,8 @@ class UsersService {
         newUser: 0,
         verify: user.verify,
         email: user.email,
-        name: user.name
+        name: user.name,
+        user: user
       }
     } else {
       // random string password
@@ -463,9 +464,11 @@ class UsersService {
         email: userInfor.email,
         // date_of_birth: new Date().toISOString(),
         password: password,
-        confirm_password: password
+        confirm_password: password,
+        avatar: userInfor.picture,
+        verify: UserVerifyStatus.Verified
       })
-      return { ...data, newUser: 1, verify: UserVerifyStatus.Unverified, email: userInfor.email, name: userInfor.name }
+      return { ...data, newUser: 1}
     }
   }
 

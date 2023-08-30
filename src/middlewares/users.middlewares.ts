@@ -23,18 +23,7 @@ export const loginValidator = checkSchema(
       isEmail: {
         errorMessage: USERS_MESSAGE.EMAIL_IS_VALID
       },
-      trim: true,
-      custom: {
-        options: async (value, { req }) => {
-          const user = await database.users.findOne({ email: value, password: hashPassword(req.body.password) })
-          // neu user = null(Ko tim thay user) thi throw error, neu ko null(tim thay user) thi truyen user qua controller
-          if (user === null) {
-            throw new Error(USERS_MESSAGE.EMAIL_OF_PASSWORD_IS_INCORRECT)
-          }
-          req.user = user
-          return true
-        }
-      }
+      trim: true
     },
     password: {
       notEmpty: {
@@ -60,6 +49,17 @@ export const loginValidator = checkSchema(
           minNumbers: 1
         },
         errorMessage: USERS_MESSAGE.PASSWORD_MUST_BE_STRONG
+      },
+      custom: {
+        options: async (value, { req }) => {
+          const user = await database.users.findOne({ email: value, password: hashPassword(req.body.password) })
+          // neu user = null(Ko tim thay user) thi throw error, neu ko null(tim thay user) thi truyen user qua controller
+          if (user === null) {
+            throw new Error(USERS_MESSAGE.EMAIL_OF_PASSWORD_IS_INCORRECT)
+          }
+          req.user = user
+          return true
+        }
       }
       // errorMessage: 'password invalid'
     }
@@ -759,54 +759,60 @@ export const followValidator = validate(
 )
 
 export const unfollowValidator = validate(
-  checkSchema({
-    user_id:{
-      custom: {
-        options: async (value: string, { req }) => {
-          if (!ObjectId.isValid(value)) {
-            throw new ErrorWithStatus({
-              message: USERS_MESSAGE.INVALID_USER_ID,
-              status: HTTP_STATUS.NOT_FOUND
+  checkSchema(
+    {
+      user_id: {
+        custom: {
+          options: async (value: string, { req }) => {
+            if (!ObjectId.isValid(value)) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGE.INVALID_USER_ID,
+                status: HTTP_STATUS.NOT_FOUND
+              })
+            }
+            const user = await database.users.findOne({
+              _id: new ObjectId(value)
             })
-          }
-          const user = await database.users.findOne({
-            _id: new ObjectId(value)
-          })
-          if (user === null) {
-            throw new ErrorWithStatus({
-              message: USERS_MESSAGE.USER_NOT_FOUND,
-              status: HTTP_STATUS.NOT_FOUND
-            })
+            if (user === null) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGE.USER_NOT_FOUND,
+                status: HTTP_STATUS.NOT_FOUND
+              })
+            }
           }
         }
       }
-    }
-  },['params'])
+    },
+    ['params']
+  )
 )
 
 export const userIdValidator = validate(
-  checkSchema({
-    user_id:{
-      custom:{
-        options: async (value, {req}) => {
-          if(!ObjectId.isValid(value)){
-            throw new ErrorWithStatus({
-              message: USERS_MESSAGE.USER_ID_MUST_BE_A_VALID_USER_ID,
-              status: HTTP_STATUS.BAD_REQUEST
+  checkSchema(
+    {
+      user_id: {
+        custom: {
+          options: async (value, { req }) => {
+            if (!ObjectId.isValid(value)) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGE.USER_ID_MUST_BE_A_VALID_USER_ID,
+                status: HTTP_STATUS.BAD_REQUEST
+              })
+            }
+            const status = await database.posts.findOne({
+              user_id: new ObjectId(value)
             })
+            if (!status) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGE.USER_ID_NOT_FOUND,
+                status: HTTP_STATUS.NOT_FOUND
+              })
+            }
+            return true
           }
-          const status = await database.posts.findOne({
-            user_id: new ObjectId(value)
-          })
-          if(!status){
-            throw new ErrorWithStatus({
-              message: USERS_MESSAGE.USER_ID_NOT_FOUND,
-              status: HTTP_STATUS.NOT_FOUND
-            })
-          }
-          return true
         }
       }
-    }
-  },['params','body'])
+    },
+    ['params', 'body']
+  )
 )

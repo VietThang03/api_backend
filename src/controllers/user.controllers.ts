@@ -186,7 +186,8 @@ export const unfollowController = async (req: Request, res: Response) => {
 export const oauthController = async (req: Request, res: Response) => {
   const {code} = req.query
   const result = await usersService.oauth(code as string)
-  const urlRedirect =`${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&verify=${result.verify}&email=${result.email}&name=${result.name}`
+  const user = encodeURIComponent(JSON.stringify(result.user))
+  const urlRedirect =`${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&user=${user}`
   return res.redirect(urlRedirect)
 }
 

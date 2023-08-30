@@ -1,11 +1,13 @@
 import { JwtPayload } from "jsonwebtoken"
-import { TokenType } from "~/contants/enum"
+import { TokenType, UserVerifyStatus } from "~/contants/enum"
 
 export interface RegisterRequestBody{
   name: string
   password: string
   email: string
-  confirm_password: string
+  confirm_password: string,
+  avatar?: string
+  verify?: UserVerifyStatus
 }
 
 export interface TokenPayload extends JwtPayload {
