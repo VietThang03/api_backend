@@ -11,7 +11,7 @@ import {
   searchUsersVacationController,
   statusVacationController
 } from '~/controllers/vacations.controllers'
-import { paginationValidator } from '~/middlewares/status.middlewares'
+import { createStatusValidator, paginationValidator } from '~/middlewares/status.middlewares'
 import { accessToken_validator, userIdValidator, verifiedUserValidator } from '~/middlewares/users.middlewares'
 import {
   audienceVacationValidator,
@@ -65,6 +65,7 @@ vacationRouters.post(
   accessToken_validator,
   verifiedUserValidator,
   vacationIdValidator,
+  createStatusValidator,
   wrapRequestHandler(statusVacationController)
 )
 

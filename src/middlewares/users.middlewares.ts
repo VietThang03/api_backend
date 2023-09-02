@@ -23,7 +23,18 @@ export const loginValidator = checkSchema(
       isEmail: {
         errorMessage: USERS_MESSAGE.EMAIL_IS_VALID
       },
-      trim: true
+      trim: true,
+      custom: {
+        options: async (value, { req }) => {
+          const user = await database.users.findOne({ email: value, password: hashPassword(req.body.password) })
+          // neu user = null(Ko tim thay user) thi throw error, neu ko null(tim thay user) thi truyen user qua controller
+          if (user === null) {
+            throw new Error(USERS_MESSAGE.EMAIL_OF_PASSWORD_IS_INCORRECT)
+          }
+          req.user = user
+          return true
+        }
+      }
     },
     password: {
       notEmpty: {
@@ -49,17 +60,6 @@ export const loginValidator = checkSchema(
           minNumbers: 1
         },
         errorMessage: USERS_MESSAGE.PASSWORD_MUST_BE_STRONG
-      },
-      custom: {
-        options: async (value, { req }) => {
-          const user = await database.users.findOne({ email: value, password: hashPassword(req.body.password) })
-          // neu user = null(Ko tim thay user) thi throw error, neu ko null(tim thay user) thi truyen user qua controller
-          if (user === null) {
-            throw new Error(USERS_MESSAGE.EMAIL_OF_PASSWORD_IS_INCORRECT)
-          }
-          req.user = user
-          return true
-        }
       }
       // errorMessage: 'password invalid'
     }
