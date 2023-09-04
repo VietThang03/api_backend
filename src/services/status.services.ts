@@ -150,6 +150,11 @@ class StatusServices {
             }
           },
           {
+            $sort: {
+              created_at: -1
+            }
+          },
+          {
             $skip: limit * (page - 1)
           },
           {
@@ -242,6 +247,11 @@ class StatusServices {
               comment: {
                 $size: '$comments'
               }
+            }
+          },
+          {
+            $sort: {
+              created_at: -1
             }
           },
           {
