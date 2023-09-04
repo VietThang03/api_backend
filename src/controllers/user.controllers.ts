@@ -164,8 +164,8 @@ export const changePasswordController = async (req: Request<ParamsDictionary, an
 }
 
 export const getUserController = async (req: Request, res: Response) => {
-  const {username} = req.params
-  const result = await usersService.getUserProfile(username)
+  const {id} = req.params
+  const result = await usersService.getUserProfile(id)
   return res.json(result)
 }
 

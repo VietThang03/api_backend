@@ -18,7 +18,7 @@ userRouter.get('/get-profile', accessToken_validator,wrapRequestHandler(getProfi
 userRouter.get('/get-suggest-user', wrapRequestHandler(getAllUsersController))
 userRouter.patch('/update-user-infor', accessToken_validator, wrapRequestHandler(verifiedUserValidator), updateProfileValidator,wrapRequestHandler(updateProfileUserController))
 userRouter.put('/change-password',accessToken_validator, wrapRequestHandler(verifiedUserValidator), changePasswordValidator, wrapRequestHandler(changePasswordController))
-userRouter.get('/:username', wrapRequestHandler(getUserController))
+userRouter.get('/:id', wrapRequestHandler(getUserController))
 userRouter.post('/follow', accessToken_validator, wrapRequestHandler(verifiedUserValidator),followValidator, wrapRequestHandler(followController))
 userRouter.delete('/follow/:user_id', accessToken_validator, wrapRequestHandler(verifiedUserValidator),unfollowValidator, wrapRequestHandler(unfollowController))
 userRouter.get('/oauth/google', wrapRequestHandler(oauthController))
