@@ -5,6 +5,9 @@ import { ObjectId, WithId } from 'mongodb'
 import { StatusVacationRequest } from '~/models/requests/Status.requests'
 import Status from '~/models/schemas/Status.schema'
 import Hashtag from '~/models/schemas/Hashtag.schema'
+import { ErrorWithStatus } from '~/models/Errors'
+import { STATUS_MESSAGES } from '~/contants/messages'
+import HTTP_STATUS from '~/contants/httpStatus'
 
 class VacationServices {
   async createVacation(user_id: string, payload: VacationReqBody) {
@@ -62,56 +65,58 @@ class VacationServices {
   }
 
   async getDetailVacation(vacation_id: string) {
-    const result = await database.vacations.aggregate([
-      {
-        $match: {
-          _id: new ObjectId(vacation_id)
-        }
-      },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'user_id',
-          foreignField: '_id',
-          as: 'user'
-        }
-      },
-      {
-        $unwind: {
-          path: '$user'
-        }
-      },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'mentions',
-          foreignField: '_id',
-          as: 'mentions'
-        }
-      },
-      {
-        $project: {
-          user: {
-            password: 0,
-            email_verify_token: 0,
-            forgot_password_token: 0,
-            verify: 0,
-            date_of_birth: 0,
-            created_at: 0,
-            updated_at: 0
-          },
-          mentions: {
-            password: 0,
-            email_verify_token: 0,
-            forgot_password_token: 0,
-            verify: 0,
-            date_of_birth: 0,
-            created_at: 0,
-            updated_at: 0
+    const result = await database.vacations
+      .aggregate([
+        {
+          $match: {
+            _id: new ObjectId(vacation_id)
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: {
+            path: '$user'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'mentions',
+            foreignField: '_id',
+            as: 'mentions'
+          }
+        },
+        {
+          $project: {
+            user: {
+              password: 0,
+              email_verify_token: 0,
+              forgot_password_token: 0,
+              verify: 0,
+              date_of_birth: 0,
+              created_at: 0,
+              updated_at: 0
+            },
+            mentions: {
+              password: 0,
+              email_verify_token: 0,
+              forgot_password_token: 0,
+              verify: 0,
+              date_of_birth: 0,
+              created_at: 0,
+              updated_at: 0
+            }
           }
         }
-      }
-    ]).toArray()
+      ])
+      .toArray()
 
     return result
   }
@@ -169,11 +174,29 @@ class VacationServices {
   }
 
   async getVacationUser({ user_id, limit, page }: { user_id: string; limit: number; page: number }) {
+    const vacation_mentions = await database.vacations
+      .find(
+        {},
+        {
+          projection: {
+            mentions: 1,
+            _id: 0
+          }
+        }
+      )
+      .toArray()
     const result = await database.vacations
       .aggregate([
         {
           $match: {
-            user_id: new ObjectId(user_id)
+            $or: [
+              {
+                user_id: new ObjectId(user_id)
+              },
+              {
+                mentions: new ObjectId(user_id)
+              }
+            ]
           }
         },
         {
