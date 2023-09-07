@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   createAlbumController,
+  deleteAlbumController,
   getAlbumsUserController,
   getDetailAlbumController,
   updateAlbumController
@@ -38,7 +39,7 @@ albumRouters.delete(
   accessToken_validator,
   verifiedUserValidator,
   albumIdValidator,
-  wrapRequestHandler(createAlbumController)
+  wrapRequestHandler(deleteAlbumController)
 )
 albumRouters.get(
   '/user/:user_id',
