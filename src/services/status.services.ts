@@ -346,7 +346,7 @@ class StatusServices {
       .toArray()
     const randomId = await database.users
       .find({ verify: 1 }, { projection: { _id: 1 } })
-      .limit(25)
+      .limit(100)
       .toArray()
     const ids = followed_user_ids.map((item) => item.followed_user_id)
     // Mong muốn newfeeds sẽ lấy luôn cả status của mình

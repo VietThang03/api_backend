@@ -503,7 +503,7 @@ class VacationServices {
         },
         {
           $sample: {
-            size: 10
+            size: 5
           }
         }
       ])
