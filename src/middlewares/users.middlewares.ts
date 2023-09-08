@@ -504,7 +504,7 @@ export const updateProfileValidator = validate(
         optional: true,
         isLength: {
           options: {
-            min: 1,
+            min: 0,
             max: 100
           },
           errorMessage: USERS_MESSAGE.NAME_LENGHT_MUST_BE_FROM_1_TO_100
@@ -530,7 +530,7 @@ export const updateProfileValidator = validate(
         },
         isLength: {
           options: {
-            min: 1,
+            min: 0,
             max: 200
           },
           errorMessage: USERS_MESSAGE.BIO_LENGHT_MUST_BE_FROM_1_TO_200
@@ -543,7 +543,7 @@ export const updateProfileValidator = validate(
         },
         isLength: {
           options: {
-            min: 1,
+            min: 0,
             max: 200
           },
           errorMessage: USERS_MESSAGE.LOCATION_LENGHT_MUST_BE_FROM_1_TO_200
@@ -557,7 +557,7 @@ export const updateProfileValidator = validate(
         trim: true,
         isLength: {
           options: {
-            min: 1,
+            min: 0,
             max: 200
           },
           errorMessage: USERS_MESSAGE.WEBSITE_LENGHT_MUST_BE_FROM_1_TO_200
@@ -571,7 +571,7 @@ export const updateProfileValidator = validate(
         trim: true,
         isLength: {
           options: {
-            min: 1,
+            min: 0,
             max: 50
           },
           errorMessage: USERS_MESSAGE.USERNAME_LENGHT_MUST_BE_FROM_1_TO_50
