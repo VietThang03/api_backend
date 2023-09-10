@@ -11,7 +11,7 @@ import Comment from '~/models/schemas/Comments.schema'
 import Vacation from '~/models/schemas/Vacation.schema'
 import Album from '~/models/schemas/Album.shema'
 
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@travel.krviq3o.mongodb.net/?retryWrites=true&w=majority`
+const uri = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@travel.krviq3o.mongodb.net/?retryWrites=true&w=majority`
 
 class DatabaseService {
   private client: MongoClient
