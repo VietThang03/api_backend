@@ -86,7 +86,7 @@ export const handleUploadVideo = async (req: Request) => {
     // khi upload file se vao thu muc uploads
     uploadDir: UPLOAD_VIDEO_DIR,
     // so luong file dc upload
-    maxFiles: 1,
+    maxFiles: 5,
     // kich thuoc toi da
     maxFileSize: 100 * 1024 * 1024, //100mb
     // maxTotalFileSize: 100 * 1024 * 1024 * 100,

@@ -10,6 +10,7 @@ import Like from '~/models/schemas/Like.schema'
 import Comment from '~/models/schemas/Comments.schema'
 import Vacation from '~/models/schemas/Vacation.schema'
 import Album from '~/models/schemas/Album.shema'
+import Converstation from '~/models/schemas/Conversations.schema'
 
 const uri = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@travel.krviq3o.mongodb.net/?retryWrites=true&w=majority`
 
@@ -70,6 +71,10 @@ class DatabaseService {
 
   get albums(): Collection<Album>{
     return this.db.collection(process.env.DB_COLLECTIONS_ALBUMS as string)
+  }
+
+  get conversations(): Collection<Converstation>{
+    return this.db.collection(process.env.DB_COLLECTIONS_CONVERSTATIONS as string)
   }
 
   async indexPosts() {

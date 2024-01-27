@@ -13,6 +13,7 @@ import mime from 'mime'
 import fsPromise from 'fs/promises'
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3'
 import { File } from 'formidable'
+import { fi } from '@faker-js/faker'
 
 class MediasService {
   async handleUploadImage(req: Request) {
@@ -53,7 +54,7 @@ class MediasService {
     const newPath = path.resolve(UPLOAD_SINGLE_IMAGE_DIR, newFullFileName)
     await sharp(files.filepath).jpeg().toFile(newPath)
     const s3Result = await uploadFileToS3({
-      fileName: newFullFileName,
+      fileName: 'images/' + newFullFileName,
       filePath: newPath,
       contentType: mime.getType(newPath) as string
     })
@@ -65,13 +66,20 @@ class MediasService {
 
   async uploadVideo(req: Request) {
     const files = await handleUploadVideo(req)
-    const { newFilename } = files[0]
-    return {
-      url: isProduction
-        ? `${process.env.HOST}/static/video/${newFilename}`
-        : `http://localhost:${process.env.PORT}/static/video/${newFilename}`,
-      type: MediaType.Video
-    }
+    const result: Media[] = await Promise.all(
+      files.map(async (file) => {
+        const s3Result = await uploadFileToS3({
+          fileName: 'videos/' + file.newFilename,
+          contentType: mime.getType(file.filepath) as string,
+          filePath: file.filepath
+        })
+        return {
+          url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+          type: MediaType.Video
+        }
+      })
+    )
+   return result
   }
 }
 

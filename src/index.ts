@@ -19,11 +19,12 @@ import vacationRouters from './routers/vacations.routes'
 import searchRouters from './routers/search.routes'
 import albumRouters from './routers/albums.routers'
 import './utils/s3'
+import Converstation from './models/schemas/Conversations.schema';
 
 initFolderPath()
 
 const app = express()
-const httpServer = createServer(app);
+// const httpServer = createServer(app);
 const port = process.env.PORT
 
 database.connect().then(() => {
@@ -52,41 +53,49 @@ app.use('/static/video',express.static(path.resolve(UPLOAD_VIDEO_DIR)))
 app.use(defaultErrorHandler)
 
 
-const io = new Server(httpServer, {
-  cors: {
-    origin: '*',
-  }
-})
+// const io = new Server(httpServer, {
+//   cors: {
+//     origin: '*',
+//   }
+// })
 
-const users: {
-  [key: string]: {
-    socket_id: string
-  }
-} = {}
+// const users: {
+//   [key: string]: {
+//     socket_id: string
+//   }
+// } = {}
 
-io.on('connection', (socket) => {
-  const user_id = socket.handshake.auth._id
-  const name = socket.handshake.auth.name
-  users[user_id] = {
-    socket_id: socket.id
-  }
-  // console.log(users)
-  socket.on('notification', (data) => {
-    // console.log(data)
-    const receiver_socket_id = users[data.to].socket_id
-    socket.to(receiver_socket_id).emit('notification user', {
-      message: `${name} vua binh luan vao bai viet cua ban`,
-      content: data.content,
-      from: user_id
-    })
-  })
-  socket.on('disconnect', () => {
-    delete users[user_id]
-    // console.log('user disconnected')
-  })
-})
+// io.on('connection', (socket) => {
+//   const user_id = socket.handshake.auth._id
+//   const name = socket.handshake.auth.name
+//   users[user_id] = {
+//     socket_id: socket.id
+//   }
+//   // console.log(users)
+//   socket.on('private message', async (data) => {
+//     // console.log(data)
+//     const receiver_socket_id = users[data.to].socket_id
+//     if(receiver_socket_id){
+//       return
+//     }
+//     database.conversations.insertOne(new Converstation({
+//       sender_id: data.to,
+//       receiver_id: data.from,
+//       content: data.content
+//     }))
+//     socket.to(receiver_socket_id).emit('notification user', {
+//       message: `${name} vua gui tin nhan cho ban`,
+//       content: data.content,
+//       from: user_id
+//     })
+//   })
+//   socket.on('disconnect', () => {
+//     delete users[user_id]
+//     // console.log('user disconnected')
+//   })
+// })
 
 
-httpServer.listen(port, () => {
+app.listen(port, () => {
     console.log(`server running on http://localhost:${port}`)
 })
