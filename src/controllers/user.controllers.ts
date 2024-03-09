@@ -3,6 +3,7 @@ import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { pick } from 'lodash'
 import { ObjectId } from 'mongodb'
+import { envConfig } from '~/contants/config'
 import { UserVerifyStatus } from '~/contants/enum'
 import { ChangePasswordReqBody, LogoutReqBody, RefreshTokenReqBody, RegisterRequestBody, ResetPasswordReqBody, TokenPayload, UpdateProfileReqBody } from '~/models/requests/User.requests'
 import User from '~/models/schemas/User.schema'
@@ -187,7 +188,7 @@ export const oauthController = async (req: Request, res: Response) => {
   const {code} = req.query
   const result = await usersService.oauth(code as string)
   const user = encodeURIComponent(JSON.stringify(result.user))
-  const urlRedirect =`${process.env.CLIENT_REDIRECT_CALLBACK}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&user=${user}`
+  const urlRedirect =`${envConfig.clientRedirectCallback}?access_token=${result.access_token}&refresh_token=${result.refresh_token}&new_user=${result.newUser}&user=${user}`
   return res.redirect(urlRedirect)
 }
 

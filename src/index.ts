@@ -20,20 +20,33 @@ import searchRouters from './routers/search.routes'
 import albumRouters from './routers/albums.routers'
 import './utils/s3'
 import Converstation from './models/schemas/Conversations.schema';
+import { envConfig, isProduction } from './contants/config';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 initFolderPath()
 
 const app = express()
-// const httpServer = createServer(app);
-const port = process.env.PORT
+
+//trong 15p goi dc toi ta 100 request
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false // Disable the `X-RateLimit-*` headers
+  // store: ... , // Use an external store for more precise rate limiting
+})
+app.use(limiter)
+
+const port = envConfig.port
 
 database.connect().then(() => {
   database.indexPosts()
   database.indexVacations()
 })
-
+app.use(helmet())
 const corsOptions: CorsOptions ={
-  origin:'*', // cho phep tat ca cac domain deu co the truy cap
+  origin: isProduction ? envConfig.clientUrl : '*', // cho phep tat ca cac domain deu co the truy cap
 }
 app.use(cors(corsOptions))
 
@@ -51,49 +64,6 @@ app.use('/search', searchRouters)
 app.use('/albums', albumRouters)
 app.use('/static/video',express.static(path.resolve(UPLOAD_VIDEO_DIR)))
 app.use(defaultErrorHandler)
-
-
-// const io = new Server(httpServer, {
-//   cors: {
-//     origin: '*',
-//   }
-// })
-
-// const users: {
-//   [key: string]: {
-//     socket_id: string
-//   }
-// } = {}
-
-// io.on('connection', (socket) => {
-//   const user_id = socket.handshake.auth._id
-//   const name = socket.handshake.auth.name
-//   users[user_id] = {
-//     socket_id: socket.id
-//   }
-//   // console.log(users)
-//   socket.on('private message', async (data) => {
-//     // console.log(data)
-//     const receiver_socket_id = users[data.to].socket_id
-//     if(receiver_socket_id){
-//       return
-//     }
-//     database.conversations.insertOne(new Converstation({
-//       sender_id: data.to,
-//       receiver_id: data.from,
-//       content: data.content
-//     }))
-//     socket.to(receiver_socket_id).emit('notification user', {
-//       message: `${name} vua gui tin nhan cho ban`,
-//       content: data.content,
-//       from: user_id
-//     })
-//   })
-//   socket.on('disconnect', () => {
-//     delete users[user_id]
-//     // console.log('user disconnected')
-//   })
-// })
 
 
 app.listen(port, () => {

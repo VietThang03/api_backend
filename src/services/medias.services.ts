@@ -12,8 +12,6 @@ import { uploadFileToS3 } from '~/utils/s3'
 import mime from 'mime'
 import fsPromise from 'fs/promises'
 import { CompleteMultipartUploadCommandOutput } from '@aws-sdk/client-s3'
-import { File } from 'formidable'
-import { fi } from '@faker-js/faker'
 
 class MediasService {
   async handleUploadImage(req: Request) {
@@ -34,9 +32,6 @@ class MediasService {
         })
         await Promise.all([fsPromise.unlink(file.filepath), fsPromise.unlink(newPath)])
         return {
-          // url: isProduction
-          //   ? `${process.env.HOST}/static/image/${newFullFileName}`
-          //   : `http://localhost:${process.env.PORT}/static/image/${newFullFileName}`,
           url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
           type: MediaType.Image
         }

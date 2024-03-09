@@ -11,8 +11,9 @@ import Comment from '~/models/schemas/Comments.schema'
 import Vacation from '~/models/schemas/Vacation.schema'
 import Album from '~/models/schemas/Album.shema'
 import Converstation from '~/models/schemas/Conversations.schema'
+import { envConfig } from '~/contants/config'
 
-const uri = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@travel.krviq3o.mongodb.net/?retryWrites=true&w=majority`
+const uri = `mongodb+srv://${envConfig.dbUsername}:${envConfig.dbPassword}@travel.krviq3o.mongodb.net/?retryWrites=true&w=majority`
 
 class DatabaseService {
   private client: MongoClient
@@ -20,7 +21,7 @@ class DatabaseService {
 
   constructor() {
     this.client = new MongoClient(uri)
-    this.db = this.client.db(process.env.DB_NAME)
+    this.db = this.client.db(envConfig.dbName)
   }
 
   async connect() {
@@ -34,47 +35,47 @@ class DatabaseService {
   }
 
   get users(): Collection<User> {
-    return this.db.collection(process.env.DB_COLLECTIONS_USERS as string)
+    return this.db.collection(envConfig.dbUsersCollection)
   }
 
   get refreshToken(): Collection<RefreshToken>{
-    return this.db.collection(process.env.DB_COLLECTIONS_REFRESH_TOKEN as string)
+    return this.db.collection(envConfig.dbRefreshTokensCollection)
   }
 
   get followers(): Collection<Follower>{
-    return this.db.collection(process.env.DB_COLLECTIONS_FOLLOWER as string)
+    return this.db.collection(envConfig.dbFollowersCollection)
   }
 
   get posts(): Collection<Status>{
-    return this.db.collection(process.env.DB_COLLECTIONS_POSTS as string)
+    return this.db.collection(envConfig.dbPostsCollection)
   }
 
   get hastags(): Collection<Hashtag>{
-    return this.db.collection(process.env.DB_COLLECTIONS_HASHTAGS as string)
+    return this.db.collection(envConfig.dbHashTagsCollection)
   }
 
   get bookmarks(): Collection<Bookmark>{
-    return this.db.collection(process.env.DB_COLLECTIONS_BOOKMARKS as string)
+    return this.db.collection(envConfig.dbBookmarksCollection)
   }
 
   get likes(): Collection<Like>{
-    return this.db.collection(process.env.DB_COLLECTIONS_LIKES as string)
+    return this.db.collection(envConfig.dbLikesCollection)
   }
 
   get comments(): Collection<Comment>{
-    return this.db.collection(process.env.DB_COLLECTIONS_COMMENTS as string)
+    return this.db.collection(envConfig.dbCommentsCollection)
   }
 
   get vacations(): Collection<Vacation>{
-    return this.db.collection(process.env.DB_COLLECTIONS_VACATIONS as string)
+    return this.db.collection(envConfig.dbVacationsCollection)
   }
 
   get albums(): Collection<Album>{
-    return this.db.collection(process.env.DB_COLLECTIONS_ALBUMS as string)
+    return this.db.collection(envConfig.dbAlbumsCollection)
   }
 
   get conversations(): Collection<Converstation>{
-    return this.db.collection(process.env.DB_COLLECTIONS_CONVERSTATIONS as string)
+    return this.db.collection(envConfig.dbCoverstationsCollection)
   }
 
   async indexPosts() {
